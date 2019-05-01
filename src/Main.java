@@ -9,6 +9,7 @@ public class Main {
 
         int inputSize  = 10240000;
 
+        System.out.println("TEST GIT");
 
         long start = System.nanoTime();
         SkipList list = new SkipList();
