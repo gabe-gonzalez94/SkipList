@@ -67,13 +67,15 @@ public class SkipList implements Dictionary {
 
 
     @Override
-    public void insertElement(int key, boolean printFlag) {
+    public long insertElement(int key, boolean printFlag) {
 
 
         double random;
         int h;
 
         Node insert;
+
+        long start = System.nanoTime();
 
         Node element = findElement(key, false);
 
@@ -160,11 +162,19 @@ public class SkipList implements Dictionary {
 
             }
 
+            long end = System.nanoTime();
+            long total = end - start;
+
+            return total;
         }
+
+        return 0;
     }
 
     @Override
-    public void removeElement(int key) {
+    public long removeElement(int key) {
+
+        long start = System.nanoTime();
 
         Node remove = findElement(key, false);
 
@@ -211,9 +221,17 @@ public class SkipList implements Dictionary {
 
             } while (remove.getAbove() != null);
 
+            long end = System.nanoTime();
+            long total = end - start;
+
+            System.out.println("Key " + key + " was removed. Time taken: " + total + " nanoseconds.");
+
+            return total;
 
 
         }
+
+        return 0;
 
     }
 
@@ -269,9 +287,10 @@ public class SkipList implements Dictionary {
 
         if(printFlag) {
             if (element.getKey() == key)
-                System.out.println("Found element " + key + ". Time taken: " + total + " nanoseconds");
+                System.out.println("Found element " + key );
             else
-                System.out.println("Element not found. Time taken: " + total + " nanoseconds");
+                System.out.println("Element " + key + " not found");
+
         }
 
         return element;
