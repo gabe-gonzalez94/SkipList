@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -40,7 +43,12 @@ public class Main {
                     break;
                 case 6:
                     list = new SkipList();
-                    generateRandomList(list);
+                    try {
+                        generateRandomList(list);
+                    }
+                    catch(IOException e){
+                        e.printStackTrace();
+                    }
                     break;
                 case 7:
                     exitFlag = true;
@@ -91,7 +99,7 @@ public class Main {
 //
     }
 
-    private static void generateRandomList(SkipList list){
+    private static void generateRandomList(SkipList list) throws IOException {
 
         Scanner input = new Scanner(System.in);
 
@@ -105,13 +113,19 @@ public class Main {
 
         long start = System.nanoTime();
 
+        BufferedWriter writer = new BufferedWriter(new FileWriter("output_123.txt"));
+
         while (size != desiredSize) {
 
             int randomNumber = random.nextInt(desiredSize * 10);
+            writer.write(Integer.toString(randomNumber));
+            writer.newLine();
             list.insertElement(randomNumber, false);
             size = list.getListSize();
 
         }
+
+        writer.close();
         long end = System.nanoTime();
         long total = end - start;
 
