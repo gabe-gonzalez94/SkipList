@@ -16,87 +16,58 @@ public class Main {
 
         boolean exitFlag = false;
 
+        System.out.println("Please select what mode do you want to use:");
+        System.out.println("[1] Input Mode");
+        System.out.println("[2] Statistics Mode");
 
-        while(!exitFlag) {
-            printMenu();
+        int mode = input.nextInt();
 
-            int choice = input.nextInt();
+        if(mode == 1){
+            while (!exitFlag) {
+                printMenu();
 
-            switch (choice) {
-                case 1:
-                    insertMenu(list);
-                    break;
-                case 2:
-                    removeMenu(list);
-                    break;
-                case 3:
-                    if(list.getListSize() > 50)
-                        System.out.println("Unable to print. List is too big.");
-                    else
-                        list.printList();
-                    break;
-                case 4:
-                    closestAfterMenu(list);
-                    break;
-                case 5:
-                    findMenu(list);
-                    break;
-                case 6:
-                    list = new SkipList();
-                    try {
-                        generateRandomList(list);
-                    }
-                    catch(IOException e){
-                        e.printStackTrace();
-                    }
-                    break;
-                case 7:
-                    exitFlag = true;
-                    break;
-                default:
-                    printMenu();
+                int choice = input.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        insertMenu(list);
+                        break;
+                    case 2:
+                        removeMenu(list);
+                        break;
+                    case 3:
+                        if (list.getListSize() > 50)
+                            System.out.println("Unable to print. List is too big.");
+                        else
+                            list.printList();
+                        break;
+                    case 4:
+                        closestAfterMenu(list);
+                        break;
+                    case 5:
+                        findMenu(list);
+                        break;
+                    case 6:
+                        list = new SkipList();
+                        try {
+                            generateRandomList(list);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 7:
+                        exitFlag = true;
+                        break;
+                    default:
+                        printMenu();
+                }
             }
+
+        }
+        else{
+
         }
 
-
-
-
-//        int inputSize  = 10240000;
-//
-//        System.out.println("TEST GIT");
-//
-//        long start = System.nanoTime();
-//        SkipList list = new SkipList();
-//        ArrayList<Integer> itemsToSearch = new ArrayList<>();
-//        Random random = new Random();
-//
-//
-//        int size= 0;
-//        int y = 0;
-//
-//        while(size != inputSize){
-//
-//            int randomNumber = random.nextInt(inputSize * 10);
-//            list.insertElement(randomNumber, false);+
-//            size = list.getListSize();
-//            if(y == 1000000) {
-//                itemsToSearch.add(randomNumber);
-//                y = 0;
-//            }
-//            y++;
-//
-//        }
-//
-//        long end = System.nanoTime();
-//        long total = end - start;
-//        System.out.println("Time taken for insert: " + total);
-//
-//        System.out.println(list.getListSize());
-//
-//        for(Integer i:itemsToSearch){
-//            list.findElement(i, true);
-//        }
-//
     }
 
     private static void generateRandomList(SkipList list) throws IOException {
