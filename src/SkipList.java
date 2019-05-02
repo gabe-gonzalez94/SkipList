@@ -1,3 +1,5 @@
+import javax.swing.plaf.synth.SynthUI;
+
 public class SkipList implements Dictionary {
 
     private Node head;
@@ -177,16 +179,61 @@ public class SkipList implements Dictionary {
 
             setListSize(getListSize() - 1);
 
-            while (remove.getAbove() != null){
+            do {
+
                 remove = remove.getAbove();
+
+                //Following part of the code is to fix correct height of list after removing an element that is the only element in a given level.
+                if(remove.getPrevious().getKey() == Node.negativeInfinity && remove.getNext().getKey() == Node.positiveInfinity){
+                    Node newHead = moveLeft(auxRemove);
+                    Node newTail = moveRight(auxRemove);
+
+                    head = newHead;
+                    tail = newTail;
+
+                    int floorsToBeRemoved = 1;
+                    Node r = remove;
+
+                    while(r.getAbove() != null){
+                        r = r.getAbove();
+                        floorsToBeRemoved++;
+                    }
+
+                    setHeight(getHeight() - floorsToBeRemoved);
+
+                    break;
+                }
+
                 auxRemove = remove;
                 auxRemove.getPrevious().setNext(auxRemove.getNext());
                 auxRemove.getNext().setPrevious(auxRemove.getPrevious());
-            }
+
+
+            } while (remove.getAbove() != null);
 
 
 
         }
+
+    }
+
+    private Node moveLeft(Node x){
+
+        while(x.getKey() != Node.negativeInfinity){
+            x = x.getPrevious();
+        }
+
+        return x;
+
+    }
+
+    private Node moveRight(Node x){
+
+        while(x.getKey() != Node.positiveInfinity){
+            x = x.getNext();
+        }
+
+        return x;
 
     }
 
@@ -224,7 +271,7 @@ public class SkipList implements Dictionary {
             if (element.getKey() == key)
                 System.out.println("Found element " + key + ". Time taken: " + total + " nanoseconds");
             else
-                System.out.println("Element not found. Closest key before is: " + element.getKey() + ". Time taken: " + total + " nanoseconds");
+                System.out.println("Element not found. Time taken: " + total + " nanoseconds");
         }
 
         return element;
@@ -260,20 +307,22 @@ public class SkipList implements Dictionary {
     }
 
     @Override
-    public int closestKeyAfter(int key) {
+    public void closestKeyAfter(int key) {
 
+        long start = System.nanoTime();
         Node current = findElement(key, false);
+        long end = System.nanoTime();
+        long total = end - start;
 
         if (current.getKey() != key){
             System.out.println("Key is not in list");
-            return key;
         }
+        else{
+            if(current.getNext().getKey() == Node.positiveInfinity)
+                System.out.println("Closest key after is +oo ");
+            else
+                System.out.println("Closest key after " + key + " is " + current.getNext().getKey() +". Time taken: " + total + " nanoseconds");
 
-        if(current.getNext().getKey() != Node.positiveInfinity)
-            return current.getNext().getKey();
-        else {
-            System.out.println("Closest key after is positive infinity");
-            return Node.positiveInfinity;
         }
     }
 
