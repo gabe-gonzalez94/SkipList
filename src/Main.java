@@ -73,8 +73,15 @@ public class Main {
             long averageSearchTime, averageFailedSearchTime, averageClosestAfterTime, averageRemovalTime, averageInsertionTime;
             long startTime, endTime, total;
 
-            System.out.println("Input size for complexity analysis:");
-            analysisSize = input.nextInt();
+            while(true) {
+                System.out.println("Input size for complexity analysis:(MUST BE GREATER  THAN 100)");
+                analysisSize = input.nextInt();
+                if(analysisSize<100) {
+                    System.out.println("Input must be greater than 100");
+                    continue;
+                }
+                break;
+            }
             System.out.println("Input size for number of iterations for accuracy:");
             iterations = input.nextInt();
 
@@ -192,12 +199,16 @@ public class Main {
             System.out.println("INSERT              | "+ findAverage(finalAverageInsertTime));
             System.out.println("-----------------------------------------");
 
-
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Press any key to exit..");
+            scanner.nextLine();
 
 
 
 
         }
+
+
 
     }
 
