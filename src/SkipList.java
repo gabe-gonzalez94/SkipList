@@ -70,12 +70,13 @@ public class SkipList implements Dictionary {
     public long insertElement(int key, boolean printFlag) {
 
 
+        long start = System.nanoTime();
+
         double random;
         int h;
 
         Node insert;
 
-        long start = System.nanoTime();
 
         Node element = findElement(key, false);
 
@@ -189,45 +190,55 @@ public class SkipList implements Dictionary {
 
             setListSize(getListSize() - 1);
 
-            do {
+            if(remove.getAbove() != null) {
 
-                remove = remove.getAbove();
+                do {
 
-                //Following part of the code is to fix correct height of list after removing an element that is the only element in a given level.
-                if(remove.getPrevious().getKey() == Node.negativeInfinity && remove.getNext().getKey() == Node.positiveInfinity){
-                    Node newHead = moveLeft(auxRemove);
-                    Node newTail = moveRight(auxRemove);
+                    remove = remove.getAbove();
 
-                    head = newHead;
-                    tail = newTail;
+                    //Following part of the code is to fix correct height of list after removing an element that is the only element in a given level.
+                    if (remove.getPrevious().getKey() == Node.negativeInfinity && remove.getNext().getKey() == Node.positiveInfinity) {
+                        Node newHead = moveLeft(auxRemove);
+                        Node newTail = moveRight(auxRemove);
 
-                    int floorsToBeRemoved = 1;
-                    Node r = remove;
+                        head = newHead;
+                        tail = newTail;
 
-                    while(r.getAbove() != null){
-                        r = r.getAbove();
-                        floorsToBeRemoved++;
+                        int floorsToBeRemoved = 1;
+                        Node r = remove;
+
+                        while (r.getAbove() != null) {
+                            r = r.getAbove();
+                            floorsToBeRemoved++;
+                        }
+
+                        setHeight(getHeight() - floorsToBeRemoved);
+
+                        break;
                     }
 
-                    setHeight(getHeight() - floorsToBeRemoved);
-
-                    break;
-                }
-
-                auxRemove = remove;
-                auxRemove.getPrevious().setNext(auxRemove.getNext());
-                auxRemove.getNext().setPrevious(auxRemove.getPrevious());
+                    auxRemove = remove;
+                    auxRemove.getPrevious().setNext(auxRemove.getNext());
+                    auxRemove.getNext().setPrevious(auxRemove.getPrevious());
 
 
-            } while (remove.getAbove() != null);
+                } while (remove.getAbove() != null);
 
-            long end = System.nanoTime();
-            long total = end - start;
+                System.out.println("Key " + key + " was removed");
 
-            System.out.println("Key " + key + " was removed. Time taken: " + total + " nanoseconds.");
+                long end = System.nanoTime();
+                long total = end - start;
 
-            return total;
+                return total;
+            }
+            else{
+                System.out.println("Key " + key + " was removed");
 
+                long end = System.nanoTime();
+                long total = end - start;
+
+                return total;
+            }
 
         }
 
@@ -326,12 +337,11 @@ public class SkipList implements Dictionary {
     }
 
     @Override
-    public void closestKeyAfter(int key) {
+    public long closestKeyAfter(int key) {
 
         long start = System.nanoTime();
         Node current = findElement(key, false);
-        long end = System.nanoTime();
-        long total = end - start;
+
 
         if (current.getKey() != key){
             System.out.println("Key is not in list");
@@ -340,9 +350,13 @@ public class SkipList implements Dictionary {
             if(current.getNext().getKey() == Node.positiveInfinity)
                 System.out.println("Closest key after is +oo ");
             else
-                System.out.println("Closest key after " + key + " is " + current.getNext().getKey() +". Time taken: " + total + " nanoseconds");
+                System.out.println("Closest key after " + key + " is " + current.getNext().getKey());
+            long end = System.nanoTime();
+            long total = end - start;
 
+            return total;
         }
+        return 0;
     }
 
 }

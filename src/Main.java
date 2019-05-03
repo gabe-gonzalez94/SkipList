@@ -10,9 +10,10 @@ public class Main {
     public static List<Integer> itemsToSearch = null;
     public static List<Integer> itemsForFailedSearch = null;
     public static List<Integer> itemsForClosestKeyAfter = null;
-    public static List<Long> average = null;
+    public static List<Integer> itemsForRemoval = null;
+    public static List<Integer> itemsToInsert = null;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
 
         SkipList list = new SkipList();
@@ -26,7 +27,7 @@ public class Main {
 
         int mode = input.nextInt();
 
-        if(mode == 1){
+        if (mode == 1) {
             while (!exitFlag) {
                 printMenu();
 
@@ -63,12 +64,11 @@ public class Main {
                 }
             }
 
-        }
-        else{
+        } else {
 
             int analysisSize;
             long generateTime;
-            long averageSearchTime, averageFailedSearchTime, averageClosestAfterTime;
+            long averageSearchTime, averageFailedSearchTime, averageClosestAfterTime, averageRemovalTime, averageInsertionTime;
             long startTime, endTime, total;
 
             System.out.println("Select size for statistics:");
@@ -84,7 +84,7 @@ public class Main {
             System.out.println("[0] 131072");
 
             int analysisChoice = input.nextInt();
-            switch(analysisChoice){
+            switch (analysisChoice) {
 
                 case 1:
                     analysisSize = 128;
@@ -123,44 +123,96 @@ public class Main {
             try {
                 generateTime = generateList(list, analysisSize);
                 System.out.println("Time taken to generate list: " + generateTime + " nanoseconds.");
-            }
-            catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
-                System.out.println("Starting successful search operations...");
+            System.out.println("Starting successful search operations...");
 
-                average = new ArrayList<>();
+            List<Long> average = new ArrayList<>();
+
+            for (int x : itemsToSearch) {
+                startTime = System.nanoTime();
+                list.findElement(x, true);
+                endTime = System.nanoTime();
+                total = endTime - startTime;
+                average.add(total);
+            }
+
+            averageSearchTime = findAverage(average);
+
+            System.out.println("Average time taken for 25 searches: " + averageSearchTime + " nanoseconds");
+
+            System.out.println("Starting failed search operations...");
+
+            List<Long> averageFailed = new ArrayList<>();
+
+            for (int x : itemsForFailedSearch) {
+                startTime = System.nanoTime();
+                list.findElement(x, true);
+                endTime = System.nanoTime();
+                total = endTime - startTime;
+                averageFailed.add(total);
+            }
+
+            averageFailedSearchTime = findAverage(averageFailed);
+
+            System.out.println("Average time taken for 25 failed searches: " + averageFailedSearchTime + " nanoseconds");
+
+            System.out.println("Starting closest key after operations...");
+
+            List<Long> averageClosest = new ArrayList<>();
+
+            for (int x : itemsForClosestKeyAfter) {
+                long totalTime = list.closestKeyAfter(x);
+                averageClosest.add(totalTime);
+            }
+
+            averageClosestAfterTime = findAverage(averageClosest);
+
+            System.out.println("Average time taken for 50 closest key after operations is: " + averageClosestAfterTime + " nanoseconds");
+
+            System.out.println("Starting removal operations...");
+
+            List<Long> averageRemoval = new ArrayList<>();
+
+            for(int x : itemsForRemoval){
+                long totalRemovalTime = list.removeElement(x);
+                averageRemoval.add(totalRemovalTime);
+            }
+
+            averageRemovalTime = findAverage(averageRemoval);
+
+            System.out.println("Average time taken for 50 removal key operations is: " + averageRemovalTime + " nanoseconds");
+
+            System.out.println("Starting inserting key operations...");
+
+            List<Long> averageInsert = new ArrayList<>();
+
+            for(int x : itemsToInsert){
+                long insertTime = list.insertElement(x, true);
+                averageInsert.add(insertTime);
+            }
+
+            averageInsertionTime = findAverage(averageInsert);
+            System.out.println("Average time taken for 50 insert operations is: " + averageInsertionTime + " nanoseconds");
+            System.out.println("\n");
+            System.out.println("FINAL RESULTS FOR LIST SIZE " + analysisSize);
+            System.out.println("                    | AVERAGE NANOSECONDS");
+            System.out.println("-----------------------------------------");
+            System.out.println("SEARCH              | "+ averageSearchTime);
+            System.out.println("-----------------------------------------");
+            System.out.println("FAILED SEARCH       | "+ averageFailedSearchTime);
+            System.out.println("-----------------------------------------");
+            System.out.println("CLOSEST KEY AFTER   | "+ averageClosestAfterTime);
+            System.out.println("-----------------------------------------");
+            System.out.println("REMOVAL             | "+ averageRemovalTime);
+            System.out.println("-----------------------------------------");
+            System.out.println("INSERT              | "+ averageInsertionTime);
+            System.out.println("-----------------------------------------");
 
 
-                for(int x: itemsToSearch){
-                    startTime = System.nanoTime();
-                    list.findElement(x, true);
-                    endTime = System.nanoTime();
-                    total = endTime - startTime;
-                    average.add(total);
-                }
-
-                averageSearchTime = findAverage(average);
-
-                System.out.println("Average time taken for 25 searches: " + averageSearchTime + " nanoseconds");
-
-                System.out.println("Starting failed search operations...");
-
-                average = new ArrayList<>();
-
-                for(int x: itemsForFailedSearch){
-                    startTime = System.nanoTime();
-                    list.findElement(x, true);
-                    endTime = System.nanoTime();
-                    total = endTime - startTime;
-                    average.add(total);
-                }
-
-                averageFailedSearchTime = findAverage(average);
-
-                System.out.println("Average time taken for 25 failed searches: " + averageFailedSearchTime + " nanoseconds");
 
 
 
@@ -169,19 +221,19 @@ public class Main {
 
     }
 
-    private static long findAverage(List<Long> average){
+    private static long findAverage(List<Long> average) {
 
         long totalSum = 0;
 
-        for(long time : average){
+        for (long time : average) {
             totalSum += time;
         }
 
-        return totalSum/average.size();
+        return totalSum / average.size();
 
     }
 
-    private static void generateRandomList(SkipList list){
+    private static void generateRandomList(SkipList list) {
 
         Scanner input = new Scanner(System.in);
 
@@ -190,12 +242,11 @@ public class Main {
 
         try {
             generateList(list, desiredSize);
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if(desiredSize <= 50)
+        if (desiredSize <= 50)
             list.printList();
 
 
@@ -207,36 +258,62 @@ public class Main {
         itemsToSearch = new ArrayList<>();
         itemsForFailedSearch = new ArrayList<>();
         itemsForClosestKeyAfter = new ArrayList<>();
+        itemsForRemoval = new ArrayList<>();
+        itemsToInsert = new ArrayList<>();
+
         long start = System.nanoTime();
 
         //itemSpread is used to capture 50 items while list is getting created
         int itemSpread = desiredSize / 25;
         int itemSpread2 = desiredSize / 50;
+        int itemSpread3 = desiredSize / 50;
+
         int size = 0;
         int searchSize = 0;
         int closestSearchSize = 0;
+        int removalSize = 1;
 
-        for(int i=0; i<25; i++){
+        for (int i = 0; i < 25; i++) {
             itemsForFailedSearch.add(random.nextInt(desiredSize * 2));
+        }
+
+        int y = 0;
+        while(y != 50){
+            int key = random.nextInt(desiredSize * 2);
+            if(itemsForFailedSearch.contains(key))
+               continue;
+            else {
+                itemsToInsert.add(key);
+                y++;
+            }
         }
 
         while (size != desiredSize) {
 
             int randomNumber = random.nextInt(desiredSize * 2);
-            if(itemsForFailedSearch.contains(randomNumber))
+            if (itemsForFailedSearch.contains(randomNumber) || itemsToInsert.contains(randomNumber))
                 continue;
-            if(searchSize == itemSpread){
+            if (searchSize == itemSpread) {
                 itemsToSearch.add(randomNumber);
                 searchSize = 0;
             }
-            if(closestSearchSize == itemSpread2){
+            if (closestSearchSize == itemSpread2) {
                 itemsForClosestKeyAfter.add(randomNumber);
                 closestSearchSize = 0;
+            }
+            if(removalSize == itemSpread3){
+                if(itemsForRemoval.contains(randomNumber))
+                    continue;
+                else {
+                    itemsForRemoval.add(randomNumber);
+                    removalSize = 0;
+                }
             }
             list.insertElement(randomNumber, false);
             size = list.getListSize();
             searchSize++;
             closestSearchSize++;
+            removalSize++;
 
         }
 
@@ -250,12 +327,12 @@ public class Main {
 
     }
 
-    private static void closestAfterMenu(SkipList list){
+    private static void closestAfterMenu(SkipList list) {
 
         Scanner input = new Scanner(System.in);
 
         boolean keepSearching = false;
-        while(!keepSearching) {
+        while (!keepSearching) {
 
             System.out.print("Please enter number to be searched: ");
             int number = input.nextInt();
@@ -267,7 +344,7 @@ public class Main {
 
                 System.out.println("Search for another number? [Y] [N] ");
                 String another = input.next();
-                if(another.equalsIgnoreCase("Y"))
+                if (another.equalsIgnoreCase("Y"))
                     continue;
                 else
                     keepSearching = true;
@@ -277,12 +354,12 @@ public class Main {
 
     }
 
-    private static void findMenu(SkipList list){
+    private static void findMenu(SkipList list) {
 
         Scanner input = new Scanner(System.in);
 
         boolean keepFinding = false;
-        while(!keepFinding) {
+        while (!keepFinding) {
 
             System.out.print("Please enter number to be searched: ");
             int number = input.nextInt();
@@ -294,7 +371,7 @@ public class Main {
 
                 System.out.println("Search for another number? [Y] [N] ");
                 String another = input.next();
-                if(another.equalsIgnoreCase("Y"))
+                if (another.equalsIgnoreCase("Y"))
                     continue;
                 else
                     keepFinding = true;
@@ -303,12 +380,13 @@ public class Main {
         }
 
     }
-    private static void insertMenu(SkipList list){
+
+    private static void insertMenu(SkipList list) {
 
         Scanner input = new Scanner(System.in);
 
         boolean keepInserting = false;
-        while(!keepInserting) {
+        while (!keepInserting) {
 
             System.out.print("Please enter number to be inserted: ");
             int number = input.nextInt();
@@ -320,7 +398,7 @@ public class Main {
                 list.printList();
                 System.out.println("Insert another number? [Y] [N] ");
                 String another = input.next();
-                if(another.equalsIgnoreCase("Y"))
+                if (another.equalsIgnoreCase("Y"))
                     continue;
                 else
                     keepInserting = true;
@@ -330,7 +408,7 @@ public class Main {
 
     }
 
-    private static void removeMenu(SkipList list){
+    private static void removeMenu(SkipList list) {
         {
 
             Scanner input = new Scanner(System.in);
@@ -339,7 +417,7 @@ public class Main {
 
             list.printList();
 
-            while(!keepRemoving) {
+            while (!keepRemoving) {
 
                 System.out.print("Please enter number to be removed: ");
                 int number = input.nextInt();
@@ -349,19 +427,18 @@ public class Main {
 
                 System.out.println("Remove another number? [Y] [N] ");
                 String another = input.next();
-                if(another.equalsIgnoreCase("Y"))
+                if (another.equalsIgnoreCase("Y"))
                     continue;
                 else
                     keepRemoving = true;
 
 
-
-                }
             }
-
         }
 
-    private static void printMenu(){
+    }
+
+    private static void printMenu() {
 
         System.out.println("[1] Insert Element");
         System.out.println("[2] Remove Element");
