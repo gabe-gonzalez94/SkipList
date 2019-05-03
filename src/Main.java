@@ -13,8 +13,8 @@ public class Main {
     public static List<Integer> itemsForRemoval = null;
     public static List<Integer> itemsToInsert = null;
 
-    public static void main(String[] args) {
 
+    public static void main(String[] args) {
 
         SkipList list = new SkipList();
         Scanner input = new Scanner(System.in);
